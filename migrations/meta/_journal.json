@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1711989417741,
+      "tag": "0000_thin_mister_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1711990838887,
+      "tag": "0001_tidy_wolf_cub",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1711991768957,
+      "tag": "0002_foamy_wolfsbane",
+      "breakpoints": true
+    }
+  ]
+}
