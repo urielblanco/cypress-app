@@ -65,26 +65,24 @@ const LoginPage = () => {
           An all-In-One Collaboration and Productivity Platform
         </FormDescription>
         <FormField
-          disabled={isLoading}
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type="email" placeholder="Email" {...field} />
+                <Input disabled={isLoading} type="email" placeholder="Email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <FormField
-          disabled={isLoading}
           control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type="password" placeholder="Password" {...field} />
+                <Input disabled={isLoading} type="password" placeholder="Password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
