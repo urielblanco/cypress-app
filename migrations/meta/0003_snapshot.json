@@ -1,7 +1,72 @@
 {
+  "id": "13b7f7b6-92d9-46ad-88e3-76b15291d8d3",
+  "prevId": "50322e7c-a433-4e98-89f2-89c59b109a3c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.collaborators": {
+      "name": "collaborators",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "collaborators_workspace_id_workspaces_id_fk": {
+          "name": "collaborators_workspace_id_workspaces_id_fk",
+          "tableFrom": "collaborators",
+          "tableTo": "workspaces",
+          "columnsFrom": [
+            "workspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collaborators_user_id_users_id_fk": {
+          "name": "collaborators_user_id_users_id_fk",
+          "tableFrom": "collaborators",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.files": {
       "name": "files",
       "schema": "",
@@ -13,8 +78,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "create_at": {
-          "name": "create_at",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -67,28 +132,28 @@
         "files_workspace_id_workspaces_id_fk": {
           "name": "files_workspace_id_workspaces_id_fk",
           "tableFrom": "files",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
-          "tableTo": "workspaces",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "files_folder_id_folders_id_fk": {
           "name": "files_folder_id_folders_id_fk",
           "tableFrom": "files",
+          "tableTo": "folders",
           "columnsFrom": [
             "folder_id"
           ],
-          "tableTo": "folders",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -105,8 +170,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "create_at": {
-          "name": "create_at",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -153,15 +218,15 @@
         "folders_workspace_id_workspaces_id_fk": {
           "name": "folders_workspace_id_workspaces_id_fk",
           "tableFrom": "folders",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
-          "tableTo": "workspaces",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -186,6 +251,7 @@
         "status": {
           "name": "status",
           "type": "subscription_status",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -275,28 +341,28 @@
         "subscriptions_user_id_users_id_fk": {
           "name": "subscriptions_user_id_users_id_fk",
           "tableFrom": "subscriptions",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "subscriptions_price_id_prices_id_fk": {
           "name": "subscriptions_price_id_prices_id_fk",
           "tableFrom": "subscriptions",
+          "tableTo": "prices",
           "columnsFrom": [
             "price_id"
           ],
-          "tableTo": "prices",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -313,8 +379,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "create_at": {
-          "name": "create_at",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -370,11 +436,10 @@
   },
   "enums": {},
   "schemas": {},
+  "sequences": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "de699745-b054-4f17-9087-9d14088507af",
-  "prevId": "70cde105-7b98-45f1-9552-a5417993a3f0"
+    "tables": {}
+  }
 }

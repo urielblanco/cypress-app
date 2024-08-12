@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Logo from '../../../../public/cypresslogo.svg';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import Loader from '@/components/loader';
+import Loader from '@/components/global/loader';
 import { useSearchParams, useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -164,8 +164,6 @@ const Signup = () => {
       </form>
     </Form>
   );
-
-  return <div>Signup</div>;
 };
 
 export default Signup;

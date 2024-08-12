@@ -15,6 +15,20 @@
       "when": 1719248979454,
       "tag": "0001_brief_drax",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720629623781,
+      "tag": "0002_strong_toxin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1720631670810,
+      "tag": "0003_hard_punisher",
+      "breakpoints": true
     }
   ]
 }

@@ -3,13 +3,13 @@
 import { z } from 'zod';
 import { FormSchema } from '../types';
 
-import { createClient } from '../supabase/server';
+import { createServerClient } from '../supabase/server';
 
 export async function actionLoginUser({
   email,
   password,
 }: z.infer<typeof FormSchema>) {
-  const supabase = createClient();
+  const supabase = createServerClient();
 
   const { error, data } = await supabase.auth.signInWithPassword({
     email,
@@ -27,7 +27,7 @@ export async function actionSignUpUser({
   email,
   password
 }) {
-  const supabase = createClient();
+  const supabase = createServerClient();
   const { data } = await supabase
     .from('profiles')
     .select('*')

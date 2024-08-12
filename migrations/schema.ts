@@ -1,5 +1,5 @@
 import { pgTable, foreignKey, pgEnum, uuid, timestamp, text, jsonb, boolean, bigint, integer } from "drizzle-orm/pg-core"
-  import { sql } from "drizzle-orm"
+import { sql } from "drizzle-orm"
 
 export const keyStatus = pgEnum("key_status", ['default', 'valid', 'invalid', 'expired'])
 export const keyType = pgEnum("key_type", ['aead-ietf', 'aead-det', 'hmacsha512', 'hmacsha256', 'auth', 'shorthash', 'generichash', 'kdf', 'secretbox', 'secretstream', 'stream_xchacha20'])
@@ -17,18 +17,18 @@ export const subscriptionStatus = pgEnum("subscription_status", ['trialing', 'ac
 
 export const folders = pgTable("folders", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
-	createAt: timestamp("create_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
 	title: text("title").notNull(),
 	iconId: text("icon_id").notNull(),
 	data: text("data"),
 	inTrash: text("in_trash"),
 	bannerUrl: text("banner_url"),
-	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" } ),
+	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" }),
 });
 
 export const workspaces = pgTable("workspaces", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
-	createAt: timestamp("create_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
 	workspaceOwner: uuid("workspace_owner").notNull(),
 	title: text("title").notNull(),
 	iconId: text("icon_id").notNull(),
@@ -40,14 +40,14 @@ export const workspaces = pgTable("workspaces", {
 
 export const files = pgTable("files", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
-	createAt: timestamp("create_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
 	title: text("title").notNull(),
 	iconId: text("icon_id").notNull(),
 	data: text("data"),
 	inTrash: text("in_trash"),
 	bannerUrl: text("banner_url"),
-	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" } ),
-	folderId: uuid("folder_id").references(() => folders.id, { onDelete: "cascade" } ),
+	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" }),
+	folderId: uuid("folder_id").references(() => folders.id, { onDelete: "cascade" }),
 });
 
 export const users = pgTable("users", {
@@ -59,15 +59,15 @@ export const users = pgTable("users", {
 	paymentMethod: jsonb("payment_method"),
 	email: text("email"),
 },
-(table) => {
-	return {
-		usersIdFkey: foreignKey({
-			columns: [table.id],
-			foreignColumns: [table.id],
-			name: "users_id_fkey"
-		}),
-	}
-});
+	(table) => {
+		return {
+			usersIdFkey: foreignKey({
+				columns: [table.id],
+				foreignColumns: [table.id],
+				name: "users_id_fkey"
+			}),
+		}
+	});
 
 export const customers = pgTable("customers", {
 	id: uuid("id").primaryKey().notNull().references(() => users.id),
@@ -114,4 +114,17 @@ export const subscriptions = pgTable("subscriptions", {
 	canceledAt: timestamp("canceled_at", { withTimezone: true, mode: 'string' }).default(sql`now()`),
 	trialStart: timestamp("trial_start", { withTimezone: true, mode: 'string' }).default(sql`now()`),
 	trialEnd: timestamp("trial_end", { withTimezone: true, mode: 'string' }).default(sql`now()`),
+});
+
+export const collaborators = pgTable('collaborators', {
+	workspaceId: uuid('workspace_id')
+		.notNull()
+		.references(() => workspaces.id, { onDelete: 'cascade' }),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+		.defaultNow()
+		.notNull(),
+	userId: uuid('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	id: uuid('id').defaultRandom().primaryKey().notNull(),
 });

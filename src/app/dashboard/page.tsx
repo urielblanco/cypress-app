@@ -1,12 +1,12 @@
 import DashboardSetup from '@/components/dashboard-setup/dashboard-setup';
 import db from '@/lib/supabase/db';
 import { getUserSubscriptionStatus } from '@/lib/supabase/queries';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 const DashboardPage = async () => {
-  const supabase = createClient();
+  const supabase = createServerClient();
 
   const { data: { user } } = await supabase.auth.getUser();
 

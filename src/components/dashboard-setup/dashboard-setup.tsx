@@ -5,8 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import EmojiPicker from "../global/emoji-picker";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { FieldValues, useForm } from "react-hook-form";
-import { Subscription } from "@/lib/supabase/supabase.types";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Subscription, workspace } from "@/lib/supabase/supabase.types";
+import { CreateWorkspaceFormSchema } from "@/lib/types";
+import { z } from "zod";
+import { v4 } from 'uuid';
+import { useRouter } from "next/navigation";
+import { createWorkspace } from "@/lib/supabase/queries";
+import { createBrowserClient } from "@/lib/supabase/browser";
+import { Button } from "../ui/button";
+import Loader from "../global/loader";
 
 interface DashboardSetupProps {
   user: AuthUser;
@@ -17,14 +25,71 @@ const DashboardSetup: React.FC<DashboardSetupProps> = ({
   subscription,
   user
 }) => {
+  const router = useRouter();
+  const supabase = createBrowserClient();
   const [selectedEmoji, setSelectedEmoji] = useState('💼');
-  const { register, handleSubmit, reset, formState: { isSubmitting: isLoading, errors } } = useForm<FieldValues>({
+  const { register, handleSubmit, reset, formState: { isSubmitting: isLoading, errors } } = useForm<z.infer<typeof CreateWorkspaceFormSchema>>({
     mode: 'onChange',
     defaultValues: {
       logo: '',
       workspaceName: ''
     }
   });
+
+  const onSubmit: SubmitHandler<z.infer<typeof CreateWorkspaceFormSchema>> = async (value) => {
+    const file = value.logo?.[0];
+    let filePath: string | null = null;
+
+    const workspaceUUID = v4();
+    console.log(file);
+
+    if (file) {
+      const response = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .storage
+        .getBucket('workspace-logos')
+      try {
+        const { data, error } = await supabase.storage
+          .from('workspace-logos')
+          .upload(`workspaceLogo.${workspaceUUID}.png`, file, {
+            cacheControl: '3600',
+            upsert: true,
+          });
+
+        if (error) throw new Error('');
+        filePath = data.path;
+      } catch (error) {
+        console.log('Error', error);
+      }
+    }
+
+    try {
+      const newWorkspace: workspace = {
+        data: null,
+        createAt: new Date().toISOString(),
+        iconId: selectedEmoji,
+        id: workspaceUUID,
+        inTrash: '',
+        title: value.workspaceName,
+        workspaceOwner: user.id,
+        logo: filePath || null,
+        bannerUrl: '',
+      };
+
+      const { data, error: createError } = await createWorkspace(newWorkspace);
+
+      if (createError) {
+        throw new Error();
+      }
+
+      router.replace(`/dashboard/${newWorkspace.id}`);
+    } catch (error) {
+      console.log('Error', error);
+    } finally {
+      reset();
+    }
+  }
 
   return (
     <Card
@@ -39,7 +104,7 @@ const DashboardSetup: React.FC<DashboardSetupProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={() => { }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-4">
             <div
               className="flex
@@ -74,26 +139,44 @@ const DashboardSetup: React.FC<DashboardSetupProps> = ({
             </div>
             <div>
               <Label
-                htmlFor="workspaceLogo"
+                htmlFor="logo"
                 className="text-sm
                 text-muted-foreground"
               >
                 Workspace Logo
               </Label>
               <Input
-                id="workspaceLogo"
+                id="logo"
                 type="file"
                 accept="image/*"
                 placeholder="Workspace Logo"
-                disabled={isLoading || subscription?.status !== 'active'} 
-                {...register('workspaceLogo', {
+                // disabled={isLoading || subscription?.status !== 'active'}
+                {...register('logo', {
                   required: 'Workspace logo is required',
                 })
                 }
               />
               <small className="text-red-600">
-                {errors?.workspaceLogo?.message?.toString()}
+                {errors?.logo?.message?.toString()}
               </small>
+              {subscription?.status !== 'active' && (
+                <small
+                  className="
+                  text-muted-foreground
+                  block
+              "
+                >
+                  To customize your workspace, you need to be on a Pro Plan
+                </small>
+              )}
+            </div>
+            <div className="self-end">
+              <Button
+                disabled={isLoading}
+                type="submit"
+              >
+                {!isLoading ? 'Create Workspace' : <Loader />}
+              </Button>
             </div>
           </div>
         </form>
