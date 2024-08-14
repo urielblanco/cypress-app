@@ -132,14 +132,14 @@ const appReducer = (
       return {
         ...state,
         workspaces: state.workspaces.map((workspace) => {
-          return {
-            ...workspace,
-            folders: [...workspace.folders, action.payload.folder].sort(
-              (a, b) =>
-                new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime()
-            ),
-          };
+            return {
+              ...workspace,
+              folders: [...workspace.folders, action.payload.folder].sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+              ),
+            };
         }),
       };
     case 'UPDATE_FOLDER':

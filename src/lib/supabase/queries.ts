@@ -5,6 +5,7 @@ import db from "./db";
 import { validate } from 'uuid';
 import { File, Folder, Subscription, User, workspace } from "./supabase.types";
 import { collaborators } from "./schema";
+import { JoinNullability } from "drizzle-orm/query-builders/select.types";
 
 export const getUserSubscriptionStatus = async (userId: string) => {
   try {
@@ -151,4 +152,14 @@ export const getUsersFromSearch = async (email: string) => {
     .from(users)
     .where(ilike(users.email, `${email}%`));
   return accounts;
+};
+
+export const createFolder = async (folder: Folder) => {
+  try {
+    const results = await db.insert(folders).values(folder);
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error creating folder!' };
+  }
 };
